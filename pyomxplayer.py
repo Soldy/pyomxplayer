@@ -1,17 +1,10 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Jun 26 10:09:28 2013
-
-@author: testa
-"""
 import pexpect
 import re
 import distutils.spawn
 import logging
 import math
 import time
-from threading import Thread
-from time import sleep
+import threading
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -123,7 +116,7 @@ class OMXPlayer(object):
 # self.current_audio_stream = 1
 # self.current_volume = 0.0
 
-        self._position_thread = Thread(target=self._get_position)
+        self._position_thread = threading.Thread(target=self._get_position)
         self._position_thread.start()
 
         if not start_playback:
@@ -141,7 +134,7 @@ class OMXPlayer(object):
             elif index in (2, 3): break
             else:
                 self.position = float(self._process.match.group(1))
-            sleep(0.05)
+            time.sleep(0.05)
 
     def toggle_pause(self):
         if self._process.send(self._PAUSE_CMD):
@@ -240,20 +233,20 @@ Basic implementation, does not check duration when seeking forward.
             if large_seeks > 0:
                 for i in range(large_seeks):
                     self.seek_forward_600()
-                    sleep(sleep_time)
+                    time.sleep(sleep_time)
             else:
                 for i in range(-large_seeks):
                     self.seek_backward_600()
-                    sleep(sleep_time)
+                    time.sleep(sleep_time)
         if small_seeks != 0:
             if small_seeks > 0:
                 for i in range(small_seeks):
                     self.seek_forward_30()
-                    sleep(sleep_time)
+                    time.sleep(sleep_time)
             else:
                 for i in range(-small_seeks):
                     self.seek_backward_30()
-                    sleep(sleep_time)
+                    time.sleep(sleep_time)
     
     @classmethod
     def _calculate_num_seeks(cls, curr_offset, target_offset):
